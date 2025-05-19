@@ -2,15 +2,11 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven-3.9.9'  // Make sure this matches your Maven tool name in Jenkins
-    }
-
-    environment {
-        IMAGE_NAME = 'aliaz333/ecom-user'
+        maven 'maven-3.9.9'  // Make sure this matches exactly your Jenkins Maven tool name
     }
 
     stages {
-        stage('Clone GitHub Repo') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/aliazam754/EcomUser.git'
             }
@@ -18,20 +14,19 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean test package '
+                sh 'mvn clean test package'
             }
         }
 
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t aliaz333/test1 .'
+                sh 'docker build -t aliaz333/ecomuser:latest .'
             }
         }
 
-        stage('Docker Run') {
+        stage('Run Docker Container') {
             steps {
-                sh 'docker rm -f ecom-user || true'
-                sh 'docker run -d -p 9090:8080 --name aliaz333/test1'
+                sh 'docker run -d -p 8080:8080 --name ecomuser aliaz333/ecomuser:latest'
             }
         }
     }
